@@ -1,195 +1,141 @@
-# OpenWRT-CI
+# 编译指南
 
-官方版：
+## 1. 环境准备
 
-https://github.com/immortalwrt/immortalwrt.git
+首先安装 Linux 系统，推荐 Ubuntu LTS。
 
-高通版：
-
-https://github.com/VIKINGYFY/immortalwrt.git
-
-# U-BOOT
-
-高通版：
-
-https://github.com/chenxin527/uboot-ipq60xx-emmc-build
-
-https://github.com/chenxin527/uboot-ipq60xx-nand-build
-
-https://github.com/chenxin527/uboot-ipq60xx-nor-build
-
-联发科版：
-
-https://drive.wrt.moe/uboot/mediatek
-
-# 固件简要说明
-
-固件每天早上4点自动编译。
-
-固件信息里的时间为编译开始的时间，方便核对上游源码提交时间。
-
-MEDIATEK系列、QUALCOMMAX系列、ROCKCHIP系列、X86系列。
-
-# 目录简要说明
-
-workflows——自定义CI配置
-
-Scripts——自定义脚本
-
-Config——自定义配置
-
-#
-[![Stargazers over time](https://starchart.cc/VIKINGYFY/OpenWRT-CI.svg?variant=adaptive)](https://starchart.cc/VIKINGYFY/OpenWRT-CI)
-
-
-
-# 固件简要说明
-
-固件每天早上4点自动编译。
-
-固件信息里的时间为编译开始的时间，方便核对上游源码提交时间。
-
-MEDIATEK系列、QUALCOMMAX系列、ROCKCHIP系列、X86系列。
-
-# 目录简要说明
-
-workflows——自定义CI配置
-
-Scripts——自定义脚本
-
-Config——自定义配置
-
-#
-
-# ~~使用 BBR暴力提速~~
-
-## ~~使用podman替代docker~~
-
-# Tips ! 如果你想在本地进行编译的话 准备以下步骤(针对AX1800Pro)
-
-## 注意
-
-1. **不要用 root 用户进行编译**
-2. 国内用户编译前最好准备好梯子
-
-- 首先安装ubuntu20.04LTS
-
-  ## 编译命令
-
-1. 首先装好 Linux 系统， Ubuntu 20.04 LTS
-
-2. 安装编译依赖
-
-首先装好 Linux 系统，推荐 Ubuntu LTS
-
-安装编译依赖
+## 2. 安装编译依赖
 
 ```bash
 sudo apt -y update
 sudo apt -y full-upgrade
 sudo apt install -y dos2unix libfuse-dev
 sudo bash -c 'bash <(curl -sL https://build-scripts.immortalwrt.org/init_build_environment.sh)'
-	
 ```
 
-## tips 上游不带有curl jq btop 但是cpu直接超频1.8G
+## 3. 使用步骤
 
-3. 下载源代码，更新 feeds 并选择配置
+1.  克隆仓库：
+    ```bash
+    git clone https://github.com/ZqinKing/wrt_release.git
+    ```
+2.  进入目录：
+    ```bash
+    cd wrt_release
+    ```
 
-   ```bash
-   git clone https://github.com/VIKINGYFY/immortalwrt
-   cd immortalwrt
-   ./scripts/feeds update -a && ./scripts/feeds install -a
-   make menuconfig
-   
-   ```
+## 4. 编译固件
 
-4. 第一次编译 一步到位
+使用 `./build.sh` 脚本进行编译，支持以下设备：
 
-   ```bash
-   make V=s download -j$(nproc) && make -j$(nproc)
-   
-   ```
+### 京东云
 
-## 编译完成后输出路径：bin/targets
+*   **雅典娜(02)、亚瑟(01)、太乙(07)、AX5(JDC版)**:
+    ```bash
+    ./build.sh jdcloud_ipq60xx_immwrt
+    ./build.sh jdcloud_ipq60xx_libwrt
+    ```
+*   **百里**:
+    ```bash
+    ./build.sh jdcloud_ax6000_immwrt
+    ```
 
+### 阿里云
 
-## 二次编译直接运行
+*   **AP8220**:
+    ```bash
+    ./build.sh aliyun_ap8220_immwrt
+    ```
 
-   ```bash
-   make -j$(nproc)
+### 领势
 
-   ```
+*   **MX4200v1、MX4200v2、MX4300**:
+    ```bash
+    ./build.sh linksys_mx4x00_immwrt
+    ```
 
-## 以下个根据情况自行选择
+### 奇虎
 
-1. 下载 dl 库，编译固件
-   （-j 后面是线程数，为便于排除错误推荐用单线程）
+*   **360v6**:
+    ```bash
+    ./build.sh qihoo_360v6_immwrt
+    ```
 
-   ```bash
-   make download -j8
-   make -j1 V=s
-   ```
+### 红米
 
-2. 二次编译：
+*   **AX5**:
+    ```bash
+    ./build.sh redmi_ax5_immwrt
+    ```
+*   **AX6**:
+    ```bash
+    ./build.sh redmi_ax6_immwrt
+    ```
+*   **AX6000**:
+    ```bash
+    ./build.sh redmi_ax6000_immwrt21
+    ```
 
-   ```bash
-   cd immortalwrt
-   git fetch && git reset --hard origin/main
-   ./scripts/feeds update -a && ./scripts/feeds install -a
-   make menuconfig
-   make V=s -j$(nproc)
-   ```
+### CMCC （中国移动）
 
-3. 如果需要重新配置：
+*   **RAX3000M**:
+    ```bash
+    ./build.sh cmcc_rax3000m_immwrt
+    ```
 
-   ```bash
-   rm -rf .config
-   make menuconfig
-   make V=s -j$(nproc)
-   ```
+### 斐讯
 
-# 以下是该仓库对上游进行的调整
+*   **N1**:
+    ```bash
+    ./build.sh n1_immwrt
+    ```
 
-1.
-.github/workflows/Auto-Clean.yml
-去除每天早上6点自动清理
+### 兆能
 
-2.
-.github/workflows/OWRT-ALL.yml
-去除每天早上6点自动清理完成后自动编译
+*   **M2**:
+    ```bash
+    ./build.sh zn_m2_immwrt
+    ./build.sh zn_m2_libwrt
+    ```
 
-3.
-.github/workflows/QCA-ALL.yml
-去除每天早上6点自动清理完成后自动编译
-设置每天早上6点自动编译
-只保留IPQ60XX带wifi设备
+### Gemtek
 
-4.
-.github/workflows/WRT-CORE.yml
-	sudo apt-get install -yqq clang-15
-更新clang-15 方便后续编译daed
-添加汉化步骤
-	#$GITHUB_WORKSPACE/Scripts/feed.sh
-#添加kiddin9的源
+*   **W1701K**:
+    ```bash
+    ./build.sh gemtek_w1701k_immwrt
+    ```
 
-5.
-Config/IPQ60XX-WIFI-YES.txt
-固件编译只保留AX1800Pro
+### 其他
 
-6.
-Scripts/Packages.sh
-去除主题luci-theme-argon替换
-去除luci-app-advancedplus高级配置更新
-~~使用不良0的带clashapi的homeproxy 无法显示需要开启无痕~~
+*   **X64**:
+    ```bash
+    ./build.sh x64_immwrt
+    ```
 
-7.
-Scripts/Settings.sh
-去除htop 去除wolplus 去除tailscale
-去除主题 luci-theme-kucat luci-theme-design
-内置 openssh-sftp-server 可以让FinalShell查看文件列表并且ssh连上不会自动断开
-内置 jq 解析、查询、操作和格式化 JSON 数据
-内置 btop 简单明了的系统资源占用查看工具
-内置 curl 网络通信工具
-~~内置 kmod-tcp-bbr BBR 拥塞控制算法替换Cubic(单车变摩托)~~
-内置 luci-app-dockerman docker上游源问题docker只能编译进去
+---
+
+## 5. 三方插件
+
+三方插件源自：[https://github.com/kenzok8/small-package.git](https://github.com/kenzok8/small-package.git)
+
+## 6. 项目结构说明
+
+- **wrt_core/**: 核心模块目录，包含所有配置、补丁和脚本。
+  - **compilecfg/**: 编译配置文件 (.ini)。
+  - **deconfig/**: 默认配置文件 (.config)。
+  - **modules/**: 模块化脚本 (general.sh, feeds.sh, packages.sh, system.sh)。
+  - **patches/**: 系统和软件包补丁。
+  - **scripts/**: 辅助脚本。
+  - **update.sh**: 更新逻辑主入口脚本。
+  - **pre_clone_action.sh**: 预克隆操作脚本。
+
+- **build.sh**: 主编译脚本，调用 `wrt_core` 中的资源。
+- **firmware/**: 编译完成的固件输出目录。
+
+## 7. OAF（应用过滤）功能使用说明
+
+使用 OAF（应用过滤）功能前，需先完成以下操作：
+
+1.  打开系统设置 → 启动项 → 定位到「appfilter」
+2.  将「appfilter」当前状态**从已禁用更改为已启用**
+3.  完成配置后，点击**启动**按钮激活服务
