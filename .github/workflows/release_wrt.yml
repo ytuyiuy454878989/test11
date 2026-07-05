@@ -1,6 +1,6 @@
 #CI项目
 name: Release WRT
-
+run-name: Release - ${{ inputs.model }}
 on:
   schedule:
     - cron: 0 22 * * *
