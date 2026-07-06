@@ -7,7 +7,7 @@ on:
    # UTC 20:00 = 北京时间 04:00
     - cron: 0 20 */1 * 2
   #手动编译
-  workflow_dispatch:
+  #workflow_dispatch:
     inputs:
       model:
         required: true
